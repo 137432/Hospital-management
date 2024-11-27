@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Left Sidebar (Navigation) -->
+        <div class="col-md-3">
+            <div class="list-group">
+                <a href="{{ url_for('main.list_patients_nurse') }}" class="list-group-item list-group-item-action">View Patients</a>
+                <a href="{{ url_for('main.view_prescriptions_nurse', patient_id=patients[0].id) }}" class="list-group-item list-group-item-action">View Prescriptions</a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <!-- Header -->
+            <div class="dashboard-header text-center">
+                <h1>Nurse Dashboard</h1>
+                <p>Welcome, {{ current_user.username }}</p>
+            </div>
+
+            <!-- Nurse Dashboard Overview -->
+            <div class="row">
+                <!-- Patient Management -->
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Patient Management</h4>
+                        </div>
+                        <div class="card-body">
+                            <p>
+                                <a href="{{ url_for('main.list_patients_nurse') }}" class="btn btn-custom">View Patients</a>
+                            </p>
+                            <p>Total Patients: {{ patient_count }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Removed Medication Management Section -->
+
+            <!-- Removed Room and Bed Assignment Section -->
+        </div>
+    </div>
+</div>
+{% endblock %}

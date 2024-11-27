@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container">
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Patient List</h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Search and Filter Form -->
+                        <form method="GET" action="{{ url_for('patient_list') }}" class="mb-4">
+                            <div class="form-row">
+                                <div class="col">
+                                    <input type="text" name="search" class="form-control" placeholder="Search by name or ID" value="{{ request.args.get('search') }}">
+                                </div>
+                                <div class="col">
+                                    <button type="submit" class="btn btn-primary">Search</button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- Patient Table -->
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Date of Birth</th>
+                                    <th>Gender</th>
+                                    <th>Contact</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for patient in patients %}
+                                    <tr>
+                                        <td>{{ patient.id }}</td>
+                                        <td>{{ patient.name }}</td>
+                                        <td>{{ patient.dob.strftime('%Y-%m-%d') }}</td>
+                                        <td>{{ patient.gender }}</td>
+                                        <td>{{ patient.contact }}</td>
+                                        <td>
+                                            <a href="{{ url_for('patient_detail', patient_id=patient.id) }}" class="btn btn-info btn-sm">View</a>
+                                            <a href="{{ url_for('edit_patient', patient_id=patient.id) }}" class="btn btn-warning btn-sm">Edit</a>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="6" class="text-center">No patients found.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

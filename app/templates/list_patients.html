@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Patient List</h1>
+
+    {% if patients %}
+        <ul class="list-group">
+            {% for patient in patients %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <a href="{{ url_for('main.view_patient', patient_id=patient.id) }}">
+                        {{ patient.username }} ({{ patient.email }})
+                    </a>
+                    <div>
+                        <a href="{{ url_for('main.view_patient_records', patient_id=patient.id) }}" class="badge badge-primary badge-pill">View Records</a>
+                        {% if current_user.role == 'doctor' %}
+                            <a href="{{ url_for('main.update_patient_record', patient_id=patient.id) }}" class="badge badge-success badge-pill">Update Record</a>
+                            <a href="{{ url_for('main.create_patient_record', patient_id=patient.id) }}" class="badge badge-info badge-pill">Add Record</a>
+                        {% endif %}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No patients found.</p>
+    {% endif %}
+    
+    {% if current_user.role == 'doctor' %}
+        <a href="{{ url_for('main.doctor_dashboard') }}" class="btn btn-secondary mt-4">Back to Doctor Dashboard</a>
+    {% elif current_user.role == 'nurse' %}
+        <a href="{{ url_for('main.nurse_dashboard') }}" class="btn btn-secondary mt-4">Back to Nurse Dashboard</a>
+    {% endif %}
+</div>
+{% endblock %}

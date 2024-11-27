@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container">
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Analytics Dashboard</h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Charts and Graphs -->
+                        <div class="row">
+                            <!-- Patient Statistics -->
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Patient Statistics</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="patientChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Appointment Trends -->
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Appointment Trends</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="appointmentChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Activities -->
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5>Recent Activities</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    {% if recent_activities %}
+                                        {% for activity in recent_activities %}
+                                            <li class="list-group-item">
+                                                <strong>{{ activity.timestamp.strftime('%Y-%m-%d %H:%M') }}:</strong> {{ activity.description }}
+                                            </li>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p>No recent activities.</p>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

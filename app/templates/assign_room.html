@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-center mt-4">Assign Room to Patient</h1>
+
+    <form method="POST">
+        <div class="form-group">
+            <label for="room_number">Select Room</label>
+            <select name="room_number" class="form-control" required>
+                <option value="">-- Select Room --</option>
+                {% for room in available_rooms %}
+                    <option value="{{ room.room_number }}">
+                        {{ room.room_number }} - 
+                        {% if room.is_full() %}
+                            Full
+                        {% else %}
+                            Available ({{ room.bed_count - room.patients|length }} beds left)
+                        {% endif %}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Assign Room</button>
+    </form>
+
+    <div class="text-center mt-4">
+        <a href="{{ url_for('main.nurse_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar Navigation -->
+        <nav class="col-md-3">
+            <div class="list-group">
+                <a href="{{ url_for('main.doctor_dashboard') }}" class="list-group-item list-group-item-action">Doctor Dashboard</a>
+                <a href="{{ url_for('main.appointment_report') }}" class="list-group-item list-group-item-action">Appointment Report</a>
+                <a href="{{ url_for('main.prescription_report') }}" class="list-group-item list-group-item-action">Prescription Report</a>
+                <a href="{{ url_for('main.patient_report') }}" class="list-group-item list-group-item-action">Patient Report</a>
+                <a href="{{ url_for('main.clinical_report') }}" class="list-group-item list-group-item-action">Clinical Report</a>
+                <a href="{{ url_for('main.notification_center') }}" class="list-group-item list-group-item-action">Notifications</a>
+                <a href="{{ url_for('main.appointments') }}" class="list-group-item list-group-item-action">Appointments</a>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="col-md-9">
+            <h1>Patients List</h1>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for patient in patients %}
+                    <tr>
+                        <td>
+                            {% if patient.patient_info %}
+                                {{ patient.patient_info.first_name }} {{ patient.patient_info.last_name }}
+                            {% else %}
+                                No patient information
+                            {% endif %}
+                        </td>
+                        <td>{{ patient.email }}</td>
+                        <td>
+                            {% if patient.patient_info %}
+                                {{ patient.patient_info.phone_number }}
+                            {% else %}
+                                Not available
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if patient.patient_info %}
+                            <div class="btn-group" role="group">
+                                <!-- Update Record Button -->
+                                <form action="{{ url_for('main.update_patient_record', patient_id=patient.patient_info.id) }}" method="GET" style="display:inline;">
+                                    <button class="btn btn-warning" type="submit">Update Record</button>
+                                </form>
+                                
+                                <!-- Prescribe Medicine Button -->
+                                <form action="{{ url_for('main.prescribe_medicine', patient_id=patient.id) }}" method="GET" style="display:inline;">
+                                    <button class="btn btn-success" type="submit">Prescribe Medicine</button>
+                                </form>
+                                
+                                <!-- View Appointment Requests Button -->
+                                <form action="{{ url_for('main.view_appointment_requests', patient_id=patient.patient_info.id) }}" method="GET" style="display:inline;">
+                                    <button class="btn btn-info" type="submit">View Appointment Requests</button>
+                                </form>
+                                
+                                <!-- View Patient's Appointments -->
+                                <form action="{{ url_for('main.view_patient_appointments', patient_id=patient.patient_info.id) }}" method="GET" style="display:inline;">
+                                    <button class="btn btn-primary" type="submit">View Appointments</button>
+                                </form>
+                                
+                                <!-- Admit Patient Button -->
+                                
+                            </div>
+                            {% else %}
+                                No actions available
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </main>
+    </div>
+</div>
+{% endblock %}

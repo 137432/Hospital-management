@@ -1,0 +1,129 @@
+/* static/css/style.css */
+
+/* Primary colors */
+:root {
+    --primary-color: #007bff; /* Primary color for links and buttons */
+    --secondary-color: #6c757d; /* Secondary color for borders and text */
+    --success-color: #28a745; /* Success color for alerts and buttons */
+    --info-color: #17a2b8; /* Info color for notifications */
+    --warning-color: #ffc107; /* Warning color for alerts */
+    --danger-color: #dc3545; /* Danger color for errors */
+    --background-color: #f8f9fa; /* Background color for the body */
+    --footer-background: #343a40; /* Background color for the footer */
+}
+
+/* Global styles */
+body {
+    background-color: var(--background-color);
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Header styles */
+header {
+    margin-bottom: 20px;
+}
+
+.navbar {
+    background-color: var(--primary-color);
+}
+
+.navbar-brand {
+    color: #ffffff !important;
+    font-weight: bold;
+}
+
+.navbar-nav .nav-link {
+    color: #ffffff !important;
+    font-weight: 500;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #dcdcdc !important;
+}
+
+/* Main content styles */
+main.container {
+    padding-top: 20px;
+}
+
+/* Card styles */
+.card {
+    border-radius: 0.5rem;
+    border: 1px solid var(--secondary-color);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Button styles */
+.btn-custom {
+    background-color: var(--success-color);
+    color: #ffffff;
+    border: none;
+    border-radius: 0.25rem;
+}
+
+.btn-custom:hover {
+    background-color: #218838;
+}
+
+/* Form control styles */
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.25);
+}
+
+/* Footer styles */
+footer {
+    background-color: var(--footer-background);
+    color: #ffffff;
+    padding: 1rem 0;
+    text-align: center;
+}
+
+footer p {
+    margin: 0;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .navbar-nav .nav-link {
+        font-size: 14px;
+    }
+
+    .card-header {
+        font-size: 16px;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .navbar-brand {
+        font-size: 18px;
+    }
+
+    .navbar-nav .nav-link {
+        font-size: 12px;
+    }
+
+    .card-header {
+        font-size: 14px;
+    }
+
+    .card-body {
+        padding: 0.5rem;
+    }
+}

@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Prescribe Medicine for {{ patient.first_name }} {{ patient.last_name }}</h2>
+<hr>
+<form method="POST">
+    {{ form.hidden_tag() }}
+
+    <!-- Hidden fields for patient_id, provider_id, and prescription_date -->
+    <input type="hidden" name="patient_id" value="{{ form.patient_id.data }}">
+    <input type="hidden" name="provider_id" value="{{ form.provider_id.data }}">
+    <input type="hidden" name="prescription_date" value="{{ form.prescription_date.data }}">
+
+    <div class="form-group">
+        {{ form.medication_name.label }} 
+        {{ form.medication_name(class="form-control") }}
+    </div>
+    <div class="form-group">
+        {{ form.dosage.label }} 
+        {{ form.dosage(class="form-control") }}
+    </div>
+    <div class="form-group">
+        {{ form.instructions.label }} 
+        {{ form.instructions(class="form-control") }}
+    </div>
+    
+    <button type="submit" class="btn btn-primary">{{ form.submit.label }}</button>
+    <a href="{{ url_for('main.view_patient', patient_id=patient.id) }}" class="btn btn-secondary">Back to Patient Details</a>
+</form>
+{% endblock %}

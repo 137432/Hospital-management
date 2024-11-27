@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container text-center">
+        <div class="jumbotron mt-4">
+            <h1 class="display-4">Welcome to the Patient Record Management System</h1>
+            <p class="lead">Your comprehensive solution for managing patient records, appointments, and more.</p>
+            <hr class="my-4">
+            <p>Streamline healthcare processes with enhanced usability, robust security, and data analytics.</p>
+            <p class="lead">
+                <a class="btn btn-primary btn-lg" href="{{ url_for('main.login') }}" role="button">Login</a>
+                <a class="btn btn-secondary btn-lg" href="{{ url_for('main.register') }}" role="button">Register</a>
+            </p>
+        </div>
+
+        <!-- Features Section -->
+        <div class="row">
+            <!-- Patient Management -->
+            {% if 'patient' in current_user.roles %}
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Patient Management</h5>
+                            <p class="card-text">Manage your medical records, view history, and request appointments.</p>
+                            <a href="{{ url_for('patient.patient_dashboard') }}" class="btn btn-custom">Go to Patient Dashboard</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Provider (Doctor) Management -->
+            {% if 'doctor' in current_user.roles %}
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Provider Management</h5>
+                            <p class="card-text">View appointments and manage patient records.</p>
+                            <a href="{{ url_for('doctor.doctor_dashboard') }}" class="btn btn-custom">Go to Provider Dashboard</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Nurse Management -->
+            {% if 'nurse' in current_user.roles %}
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Nurse Management</h5>
+                            <p class="card-text">Assist in managing patient care and schedule appointments.</p>
+                            <a href="{{ url_for('nurse.nurse_dashboard') }}" class="btn btn-custom">Go to Nurse Dashboard</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Admin Management -->
+            {% if 'admin' in current_user.roles %}
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Admin Management</h5>
+                            <p class="card-text">Access administrative tools to manage the system.</p>
+                            <a href="{{ url_for('main.admin_dashboard') }}" class="btn btn-custom">Go to Admin Dashboard</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Footer Section -->
+        <footer class="footer mt-4 py-3 bg-dark text-white text-center">
+            <p>&copy; {{ current_year }} Patient Record Management System. All rights reserved.</p>
+        </footer>
+    </div>
+{% endblock %}

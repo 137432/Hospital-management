@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Left Sidebar (Navigation) -->
+        <div class="col-md-3">
+            <div class="list-group">
+                <a href="{{ url_for('main.list_patients_nurse') }}" class="list-group-item list-group-item-action">View Patients</a>
+                <a href="{{ url_for('main.view_prescriptions_nurse', patient_id=patients[0].id) }}" class="list-group-item list-group-item-action">View Prescriptions</a>
+                <a href="{{ url_for('main.update_patient_record_nurse', patient_id=patients[0].id) }}" class="list-group-item list-group-item-action">Update Records</a>
+                <a href="{{ url_for('main.assign_room', patient_id=patients[0].id) }}" class="list-group-item list-group-item-action">Assign Room</a>
+                <a href="{{ url_for('main.assign_bed', patient_id=patients[0].id) }}" class="list-group-item list-group-item-action">Assign Bed</a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <h1 class="text-center mt-4">Patient List</h1>
+
+            <!-- Search Functionality (Optional) -->
+            <div class="mb-3">
+                <form method="GET" action="{{ url_for('main.list_patients_nurse') }}">
+                    <div class="input-group">
+                        <input type="text" name="search" class="form-control" placeholder="Search patients by name..." aria-label="Search patients">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="submit">Search</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Patient Table -->
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Date of Birth</th>
+                        <th>Phone Number</th>
+                        <th>Address</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if patients %}
+                        {% for patient in patients %}
+                            <tr>
+                                <td>{{ patient.id }}</td>
+                                <td>{{ patient.first_name }}</td>
+                                <td>{{ patient.last_name }}</td>
+                                <td>{{ patient.dob.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ patient.phone_number }}</td>
+                                <td>{{ patient.address }}</td>
+                                <td>
+                                    {% if patient.is_admitted %}
+                                        <form method="POST" action="{{ url_for('main.discharge_patients', patient_id=patient.id) }}" class="d-inline">
+                                            <button type="submit" class="btn btn-danger btn-sm">Discharge</button>
+                                        </form>
+                                    {% else %}
+                                        <form method="POST" action="{{ url_for('main.admit_patients', patient_id=patient.id) }}" class="d-inline">
+                                            <button type="submit" class="btn btn-success btn-sm">Admit</button>
+                                        </form>
+                                    {% endif %}
+                                    <a href="{{ url_for('main.view_prescriptions_nurse', patient_id=patient.id) }}" class="btn btn-info btn-sm">View Prescriptions</a>
+                                    <a href="{{ url_for('main.update_patient_record_nurse', patient_id=patient.id) }}" class="btn btn-warning btn-sm">Update Records</a>
+                                    <a href="{{ url_for('main.assign_room', patient_id=patient.id) }}" class="btn btn-primary btn-sm">Assign Room</a>
+                                    <a href="{{ url_for('main.assign_bed', patient_id=patient.id) }}" class="btn btn-secondary btn-sm">Assign Bed</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center">No patients found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+
+            <div class="text-center">
+                <a href="{{ url_for('main.nurse_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

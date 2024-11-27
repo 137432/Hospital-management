@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container">
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Notification Center</h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Search and Filter -->
+                        <form method="GET" action="{{ url_for('main.notification_center') }}" class="mb-4">
+                            <div class="form-row">
+                                <div class="col">
+                                    <input type="text" name="search" class="form-control" placeholder="Search notifications" value="{{ request.args.get('search') }}">
+                                </div>
+                                <div class="col">
+                                    <select name="status" class="form-control">
+                                        <option value="">All Statuses</option>
+                                        <option value="unread" {% if request.args.get('status') == 'unread' %}selected{% endif %}>Unread</option>
+                                        <option value="read" {% if request.args.get('status') == 'read' %}selected{% endif %}>Read</option>
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <button type="submit" class="btn btn-primary">Filter</button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- Notification List -->
+                        <ul class="list-group">
+                            {% for notification in notifications %}
+                                <li class="list-group-item {% if not notification.read %}list-group-item-action{% endif %}">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">{{ notification.title }}</h5>
+                                        <small>{{ notification.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
+                                    </div>
+                                    <p class="mb-1">{{ notification.message }}</p>
+                                    <small class="text-muted">Status: {% if notification.read %}Read{% else %}Unread{% endif %}</small>
+                                    {% if not notification.read %}
+                                        <a href="{{ url_for('mark_as_read', notification_id=notification.id) }}" class="btn btn-link">Mark as Read</a>
+                                    {% endif %}
+                                </li>
+                            {% else %}
+                                <li class="list-group-item">No notifications found.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

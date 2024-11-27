@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>Add Medical Record for {{ patient.name }}</h1>
+    <p><strong>Email:</strong> {{ patient.email }}</p>
+    <p><strong>Phone:</strong> {{ patient.phone }}</p>
+    <p><strong>Address:</strong> {{ patient.address }}</p>
+
+    <form action="{{ url_for('main.add_patient_record', patient_id=patient.id) }}" method="POST">
+        {{ form.hidden_tag() }} <!-- For CSRF protection -->
+
+        <div class="form-group">
+            {{ form.disease.label(class="form-label") }}
+            {{ form.disease(class="form-control", placeholder="Enter disease/condition", required=True) }}
+        </div>
+
+        <div class="form-group">
+            {{ form.diagnosis.label(class="form-label") }}
+            {{ form.diagnosis(class="form-control", rows=3, placeholder="Enter diagnosis", required=True) }}
+        </div>
+
+        <div class="form-group">
+            {{ form.prescribed_medicine.label(class="form-label") }}
+            {{ form.prescribed_medicine(class="form-control", placeholder="Enter prescribed medicine", required=True) }}
+        </div>
+
+        <div class="form-group">
+            {{ form.treatment_plan.label(class="form-label") }}
+            {{ form.treatment_plan(class="form-control", rows=3, placeholder="Enter treatment plan", required=True) }}
+        </div>
+
+        <div class="form-group">
+            {{ form.treatment.label(class="form-label") }}
+            {{ form.treatment(class="form-control", rows=3, placeholder="Enter treatment details", required=True) }}
+        </div>
+
+        <div class="form-group">
+            {{ form.details.label(class="form-label") }}
+            {{ form.details(class="form-control", rows=3, placeholder="Enter additional details", required=True) }}
+        </div>
+
+        <div class="form-group">
+            {{ form.notes.label(class="form-label") }}
+            {{ form.notes(class="form-control", rows=4, placeholder="Additional notes") }}
+        </div>
+
+        <div class="form-group">
+            {{ form.follow_up_date.label(class="form-label") }}
+            {{ form.follow_up_date(class="form-control") }}
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Add Medical Record</button>
+    </form>
+</div>
+{% endblock %}

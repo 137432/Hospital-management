@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Manage Medics</h2>
+  <ul>
+    {% for medic in medics %}
+      <li>{{ medic.username }} - {{ medic.role.name }}</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

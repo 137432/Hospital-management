@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container-fluid">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header text-center mb-4">
+            <h1>Health Metrics Report</h1>
+            <p>View the health metrics data for patients.</p>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <nav class="col-md-3">
+                <div class="list-group">
+                    <a href="{{ url_for('main.user_management') }}" class="list-group-item list-group-item-action">Manage Providers</a>
+                    <a href="{{ url_for('main.admin_analytics') }}" class="list-group-item list-group-item-action">View Analytics</a>
+                    <a href="{{ url_for('main.notification_center') }}" class="list-group-item list-group-item-action">Notifications</a>
+                    <a href="{{ url_for('main.system_logs') }}" class="list-group-item list-group-item-action">Recent Activity</a>
+                    <!-- Add report links -->
+                    <a href="{{ url_for('main.prescription_report') }}" class="list-group-item list-group-item-action">Prescription and Medication Report</a>
+                    <a href="{{ url_for('main.admissions_report') }}" class="list-group-item list-group-item-action">Admissions and Discharges Report</a>
+                    <a href="{{ url_for('main.health_metrics_report') }}" class="list-group-item list-group-item-action active">Health Metrics Report</a>
+                    <a href="{{ url_for('main.operational_report') }}" class="list-group-item list-group-item-action">Operational Report</a>
+                    <a href="{{ url_for('main.clinical_report') }}" class="list-group-item list-group-item-action">Clinical Report</a>
+                    <a href="{{ url_for('main.appointment_report') }}" class="list-group-item list-group-item-action">Appointment Report</a>
+                    <a href="{{ url_for('main.patient_report') }}" class="list-group-item list-group-item-action">Patient Report</a>
+                </div>
+            </nav>
+
+            <!-- Main Content Area -->
+            <main class="col-md-9">
+                <!-- Health Metrics Report -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2>Health Metrics</h2>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Patient</th>
+                                    <th>Metric Type</th>
+                                    <th>Value</th>
+                                    <th>Measurement Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for metric in health_metrics %}
+                                    <tr>
+                                        <td>{{ metric.patient.first_name }} {{ metric.patient.last_name }}</td>
+                                        <td>{{ metric.metric_type }}</td>
+                                        <td>{{ metric.value }}</td>
+                                        <td>{{ metric.measurement_date.strftime('%Y-%m-%d') }}</td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">No health metrics found.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+{% endblock %}

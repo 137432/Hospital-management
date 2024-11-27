@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-center mt-4">Update Medical Record for {{ patient.first_name }} {{ patient.last_name }}</h1>
+
+    <form action="{{ url_for('main.update_patient_record_nurse', patient_id=patient.id) }}" method="POST">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+            <label for="record_date">Record Date</label>
+            <input type="datetime-local" class="form-control" id="record_date" name="record_date"
+                   value="{{ patient.record_date.strftime('%Y-%m-%dT%H:%M') if patient.record_date else '' }}" required>
+        </div>
+
+        <div class="form-group">
+            {{ form.vitals.label }}
+            {{ form.vitals(class="form-control", rows="5") }}
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">Update Record</button>
+            <a href="{{ url_for('main.nurse_dashboard') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+
+    {% if messages %}
+        <div class="mt-4">
+            <ul class="list-group">
+                {% for message in messages %}
+                    <li class="list-group-item">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Patient Record Management System{% endblock %}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: linear-gradient(to right, #e3f2fd, #bbdefb);
+        }
+
+        header {
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        nav .nav-link {
+            transition: background-color 0.3s;
+        }
+
+        nav .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+        }
+
+        main {
+            flex: 1;
+            padding: 20px;
+        }
+
+        footer {
+            background-color: #343a40;
+            color: white;
+            padding: 15px 0;
+        }
+
+        .alert-container {
+            margin-top: 20px;
+        }
+
+        .welcome-banner {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            animation: fadeIn 1s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .welcome-banner {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <a class="navbar-brand" href="{% if current_user.is_authenticated %}
+                                              {% if 'admin' in current_user.roles %}
+                                                  {{ url_for('main.admin_dashboard') }}
+                                              {% elif 'provider' in current_user.roles %}
+                                                  {{ url_for('main.doctor_dashboard') }}
+                                              {% elif 'nurse' in current_user.roles %}
+                                                  {{ url_for('main.nurse_dashboard') }}
+                                              {% elif 'patient' in current_user.roles %}
+                                                  {{ url_for('main.patient_dashboard') }}
+                                              {% endif %}
+                                          {% else %}
+                                              {{ url_for('index') }}
+                                          {% endif %}">
+                Patient Record Management System
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% if current_user.is_authenticated %}
+                                                      {% if 'admin' in current_user.roles %}
+                                                          {{ url_for('main.admin_dashboard') }}
+                                                      {% elif 'provider' in current_user.roles %}
+                                                          {{ url_for('main.doctor_dashboard') }}
+                                                      {% elif 'nurse' in current_user.roles %}
+                                                          {{ url_for('main.nurse_dashboard') }}
+                                                      {% elif 'patient' in current_user.roles %}
+                                                          {{ url_for('main.patient_dashboard') }}
+                                                      {% endif %}
+                                                  {% else %}
+                                                      {{ url_for('index') }}
+                                                  {% endif %}">Home</a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                        {% if 'admin' in current_user.roles %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('main.admin_dashboard') }}">Admin Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('main.user_management') }}">User Management</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('main.admin_patient_management') }}">Patient Management</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('main.system_logs') }}">System Logs</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('main.admin_analytics') }}">Analytics</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('main.notification_center') }}">Notifications</a>
+                            </li>
+                        {% elif 'provider' in current_user.roles %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('main.doctor_dashboard') }}">Provider Dashboard</a>
+                            </li>
+                        {% elif 'nurse' in current_user.roles %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('main.nurse_dashboard') }}">Nurse Dashboard</a>
+                            </li>
+                        {% elif 'patient' in current_user.roles %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('main.patient_dashboard') }}">Patient Dashboard</a>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.logout') }}">Logout</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.login') }}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.register') }}">Register</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main role="main" class="container my-4">
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                <div class="alert-container">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="welcome-banner">
+            <h2>Welcome to the Patient Record Management System</h2>
+            <p>Your health is our priority. Manage your records easily.</p>
+        </div>
+
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="text-center py-3">
+        <p>&copy; 2024 Patient Management System</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

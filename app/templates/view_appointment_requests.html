@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>Appointment Requests for {{ patient.first_name }} {{ patient.last_name }}</h1>
+
+    {% if requests %}
+        <ul class="list-group">
+            {% for request in requests %}
+                <li class="list-group-item">
+                    <strong>Requested Date:</strong> {{ request.requested_time.strftime('%Y-%m-%d %H:%M:%S') }}<br>
+                    <strong>Status:</strong> {{ request.status }}<br>
+                    <form action="{{ url_for('main.schedule_appointment_for_patient', patient_id=request.patient_id) }}" method="POST" style="margin-top: 10px;">
+                        <label for="appointment_date">Appointment Date:</label>
+                        <input type="datetime-local" name="appointment_date" required>
+                        <input type="hidden" name="request_id" value="{{ request.id }}">  <!-- Hidden field for request ID -->
+                        <button type="submit" class="btn btn-primary btn-sm">Schedule Appointment</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No appointment requests available for this patient.</p>
+    {% endif %}
+</div>
+{% endblock %}

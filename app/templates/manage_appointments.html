@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="dashboard-header text-center">
+        <h1>Manage Appointments</h1>
+    </div>
+
+    <!-- Button to Create New Appointment -->
+    <div class="text-right mb-3">
+        <a href="{{ url_for('admin.create_appointment') }}" class="btn btn-primary">Create New Appointment</a>
+    </div>
+
+    <!-- Appointments Table -->
+    <div class="card">
+        <div class="card-header">
+            <h4>Upcoming Appointments</h4>
+        </div>
+        <div class="card-body">
+            {% if appointments %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Patient</th>
+                            <th>Provider</th>
+                            <th>Date</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appointment in appointments %}
+                            <tr>
+                                <td>{{ appointment.id }}</td>
+                                <td>{{ appointment.patient.username }}</td>
+                                <td>{{ appointment.provider.username }}</td>
+                                <td>{{ appointment.appointment_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>{{ appointment.notes }}</td>
+                                <td>
+                                    <a href="{{ url_for('admin.edit_appointment', appointment_id=appointment.id) }}" class="btn btn-warning btn-sm">Edit</a>
+                                    <form action="{{ url_for('admin.delete_appointment', appointment_id=appointment.id) }}" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this appointment?');">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No upcoming appointments found.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

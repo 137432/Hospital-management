@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container">
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Appointment History</h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Search and Filter -->
+                        <form method="GET" action="{{ url_for('appointment_history') }}" class="mb-4">
+                            <div class="form-row">
+                                <div class="col">
+                                    <input type="text" name="search" class="form-control" placeholder="Search by patient name or ID" value="{{ request.args.get('search') }}">
+                                </div>
+                                <div class="col">
+                                    <input type="date" name="date_from" class="form-control" placeholder="From Date" value="{{ request.args.get('date_from') }}">
+                                </div>
+                                <div class="col">
+                                    <input type="date" name="date_to" class="form-control" placeholder="To Date" value="{{ request.args.get('date_to') }}">
+                                </div>
+                                <div class="col">
+                                    <button type="submit" class="btn btn-primary">Search</button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- Appointment Table -->
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Patient Name</th>
+                                    <th>Provider</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for appointment in appointments %}
+                                    <tr>
+                                        <td>{{ appointment.id }}</td>
+                                        <td>{{ appointment.patient_name }}</td>
+                                        <td>{{ appointment.provider_name }}</td>
+                                        <td>{{ appointment.date.strftime('%Y-%m-%d') }}</td>
+                                        <td>{{ appointment.time.strftime('%H:%M') }}</td>
+                                        <td>{{ appointment.status }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

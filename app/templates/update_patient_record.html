@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Update Patient Record for {{ patient.first_name }} {{ patient.last_name }}</h2>
+<hr>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    
+    <div class="form-group">
+        {{ form.disease.label }}
+        {{ form.disease(class="form-control", placeholder="Enter disease/condition", required=True) }}
+    </div>
+
+    <div class="form-group">
+        {{ form.prescribed_medicine.label }}
+        {{ form.prescribed_medicine(class="form-control", placeholder="Enter prescribed medicine", required=True) }}
+    </div>
+
+    <div class="form-group">
+        {{ form.diagnosis.label }} 
+        {{ form.diagnosis(class="form-control", placeholder="Enter diagnosis", required=True) }}
+    </div>
+
+    <div class="form-group">
+        {{ form.treatment_plan.label }}
+        {{ form.treatment_plan(class="form-control", placeholder="Enter treatment plan", required=True) }}
+    </div>
+
+    <div class="form-group">
+        {{ form.treatment.label }} 
+        {{ form.treatment(class="form-control", placeholder="Enter treatment details", required=True) }}
+    </div>
+
+    <div class="form-group">
+        {{ form.notes.label }} 
+        {{ form.notes(class="form-control", rows=4, placeholder="Additional notes") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.follow_up_date.label }} 
+        {{ form.follow_up_date(class="form-control", type="date") }} <!-- Ensures date format input -->
+    </div>
+
+    <button type="submit" class="btn btn-primary">{{ form.submit.label }}</button>
+    <a href="{{ url_for('main.view_patient', patient_id=patient.id) }}" class="btn btn-secondary">Back to Patient Details</a>
+</form>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container-fluid">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header text-center mb-4">
+            <h1>Patient Report</h1>
+            <p>View details of patient information and their diagnosis history.</p>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <nav class="col-md-3">
+                <div class="list-group">
+                    
+                    <!-- Add report links -->
+                    <a href="{{ url_for('main.prescription_report') }}" class="list-group-item list-group-item-action">Prescription and Medication Report</a>
+                    <a href="{{ url_for('main.admissions_report') }}" class="list-group-item list-group-item-action">Admissions and Discharges Report</a>
+                    <a href="{{ url_for('main.health_metrics_report') }}" class="list-group-item list-group-item-action">Health Metrics Report</a>
+                    <a href="{{ url_for('main.operational_report') }}" class="list-group-item list-group-item-action">Operational Report</a>
+                    <a href="{{ url_for('main.clinical_report') }}" class="list-group-item list-group-item-action">Clinical Report</a>
+                    <a href="{{ url_for('main.appointment_report') }}" class="list-group-item list-group-item-action">Appointment Report</a>
+                    <a href="{{ url_for('main.patient_report') }}" class="list-group-item list-group-item-action active">Patient Report</a>
+                </div>
+            </nav>
+
+            <!-- Main Content Area -->
+            <main class="col-md-9">
+                <!-- Patient Report -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2>Patient Details</h2>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Age</th>
+                                    <th>Gender</th>
+                                    <th>Diagnosis History</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for patient in patients %}
+                                    <tr>
+                                        <td>{{ patient.first_name }} {{ patient.last_name }}</td>
+                                        <td>{{ patient.age }}</td>
+                                        <td>{{ patient.gender }}</td>
+                                        <td>
+                                            {% for record in patient.records %}
+                                                <p>{{ record.diagnosis }}</p>
+                                            {% endfor %}
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">No patient data available.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+{% endblock %}

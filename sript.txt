@@ -1,0 +1,681 @@
+flask shell
+
+
+
+
+from app import db
+from app.models import User, Role
+from werkzeug.security import generate_password_hash
+
+# Check if the admin role exists
+admin_role = Role.query.filter_by(name='admin').first()
+if not admin_role:
+    admin_role = Role(name='admin')
+    db.session.add(admin_role)
+    db.session.commit()
+
+# Add the admin user
+admin_user = User(
+    username='admin',
+    email='admin@example.com',
+    password=generate_password_hash('adminpassword', method='pbkdf2:sha256'),
+    role_id=admin_role.id  # Assign the admin role
+)
+
+db.session.add(admin_user)
+db.session.commit()
+
+print('Admin account created successfully!')
+
+
+how to get password for the crated medics, and users,
+
+home page for the dasboads sifferent from the wellcome page, 
+
+
+
+
+
+
+from flask import Blueprint
+
+# Define blueprints for modular routes
+auth_bp = Blueprint('auth', __name__)
+patient_bp = Blueprint('patient', __name__)
+admin_bp = Blueprint('admin', __name__)
+analytics_bp = Blueprint('analytics', __name__)
+nurse_bp = Blueprint('nurse', __name__)  # Nurse Blueprint
+doctor_bp = Blueprint('doctor', __name__)  # Doctor Blueprint
+
+def register_routes(app):
+    """
+    Import and register all route modules for the blueprints.
+    
+    Parameters:
+        app: Flask application instance.
+    """
+    # Import route modules for each blueprint
+    from . import auth, patient, admin, analytics, nurse, doctor  
+
+    # Register blueprints with the application
+    app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(patient_bp, url_prefix='/patient')
+    app.register_blueprint(admin_bp, url_prefix='/admin')
+    app.register_blueprint(analytics_bp, url_prefix='/analytics')
+    app.register_blueprint(nurse_bp, url_prefix='/nurse')  # Register Nurse Blueprint
+    app.register_blueprint(doctor_bp, url_prefix='/doctor')  # Register Doctor Blueprint
+
+    # Additional routes or logic can be added here if necessary
+
+
+
+from flask import render_template, redirect, url_for, flash
+from flask_login import login_required, current_user
+from werkzeug.security import generate_password_hash
+from . import admin_bp
+from app.models import User  # Removed Role import
+from app.forms import CreateMedicForm, EditUserForm
+from app import db
+import logging
+
+# Initialize logging
+logger = logging.getLogger(__name__)
+
+@admin_bp.route('/dashboard')
+@login_required
+def admin_dashboard():
+    if current_user.role != 'admin':  # Updated to check role as a string
+        logger.warning(f"Unauthorized access attempt by user {current_user.username}")
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('index'))
+
+    logger.info(f"Admin dashboard accessed by user {current_user.username}")
+    return render_template('admin_dashboard.html', admin=current_user)
+
+@admin_bp.route('/users/management')
+@login_required
+def user_management():
+    if current_user.role != 'admin':  # Updated to check role as a string
+        logger.warning(f"Unauthorized access attempt to user management by {current_user.username}")
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('index'))
+
+    users = User.query.all()
+    logger.info(f"User management accessed by {current_user.username}, {len(users)} users loaded")
+    
+    # Initialize forms for adding a medic and editing a user
+    add_medic_form = CreateMedicForm()
+    edit_user_form = EditUserForm()
+
+    return render_template('user_management.html', users=users, add_medic_form=add_medic_form, edit_user_form=edit_user_form)
+
+@admin_bp.route('/create-medic', methods=['POST'])
+@login_required
+def create_medic():
+    if current_user.role != 'admin':  # Ensure only admin can create medics
+        logger.warning(f"Unauthorized attempt to create medic by {current_user.username}")
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('index'))
+
+    form = CreateMedicForm()
+    if form.validate_on_submit():
+        logger.info(f"Attempting to create medic with username: {form.username.data}, email: {form.email.data}, role: {form.role.data}")
+
+        hashed_password = generate_password_hash('defaultpassword', method='pbkdf2:sha256')
+        logger.info(f"Plaintext password for new medic: defaultpassword")
+
+        # Check if the user already exists
+        existing_user = User.query.filter_by(email=form.email.data).first()
+        if existing_user:
+            logger.warning(f"Attempt to create medic with an existing email: {form.email.data}")
+            flash('A user with this email already exists. Please use a different email.', 'danger')
+            return redirect(url_for('admin.user_management'))
+
+        # Set is_provider to True for doctors and nurses
+        is_provider = form.role.data in ['doctor', 'nurse']
+
+        # Create and save the new medic
+        try:
+            user = User(
+                username=form.username.data,
+                email=form.email.data,
+                password=hashed_password,
+                role=form.role.data,  # Assuming role is either 'doctor' or 'nurse'
+                is_provider=is_provider  # Set to True if the role is doctor or nurse
+            )
+            db.session.add(user)
+            db.session.commit()
+            logger.info(f"New {form.role.data} created by {current_user.username}: Username={form.username.data}")
+            flash(f'{form.role.data.capitalize()} created successfully.', 'success')
+        except Exception as e:
+            logger.error(f"Error creating medic: {str(e)}")
+            flash('An error occurred while creating the medic. Please try again.', 'danger')
+
+        return redirect(url_for('admin.user_management'))
+
+    logger.warning(f"Form submission failed for medic creation. Errors: {form.errors}")
+    flash('Form submission failed. Please check the details.', 'danger')
+    return redirect(url_for('admin.user_management'))
+
+    
+    # Log form validation failure details
+    logger.warning(f"Form submission failed for medic creation. Errors: {form.errors}")
+    flash('Form submission failed. Please check the details.', 'danger')
+    return redirect(url_for('admin.user_management'))
+
+@admin_bp.route('/users/delete/<int:user_id>', methods=['POST'])
+@login_required
+def delete_user(user_id):
+    if current_user.role != 'admin':  # Updated to check role as a string
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('index'))
+
+    user_to_delete = User.query.get(user_id)
+    if user_to_delete:
+        db.session.delete(user_to_delete)
+        db.session.commit()
+        flash('User deleted successfully.', 'success')
+        logger.info(f"User {user_to_delete.username} deleted by {current_user.username}")
+    else:
+        flash('User not found.', 'danger')
+
+    return redirect(url_for('admin.user_management'))
+
+@admin_bp.route('/system/logs', methods=['GET'])
+@login_required
+def system_logs():
+    if current_user.role != 'admin':  # Updated to check role as a string
+        logger.warning(f"Unauthorized access attempt to system logs by {current_user.username}")
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('index'))
+
+    logs = []  # Fetch logs from the database or logging system
+    logger.info(f"System logs accessed by {current_user.username}")
+    return render_template('system_logs.html', logs=logs)
+
+@admin_bp.route('/analytics')
+@login_required
+def admin_analytics():
+    if current_user.role != 'admin':  # Updated to check role as a string
+        logger.warning(f"Unauthorized access attempt to analytics by {current_user.username}")
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('index'))
+
+    analytics_data = []  # Process or query analytics data
+    logger.info(f"Analytics accessed by {current_user.username}")
+    return render_template('admin_analytics.html', analytics=analytics_data)
+
+@admin_bp.route('/notifications')
+@login_required
+def notification_center():
+    if current_user.role != 'admin':  # Updated to check role as a string
+        logger.warning(f"Unauthorized access attempt to notification center by {current_user.username}")
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('index'))
+
+    notifications = []  # Query notifications for the admin
+    logger.info(f"Notification center accessed by {current_user.username}")
+    return render_template('notification_center.html', notifications=notifications)
+
+
+from flask import render_template, redirect, url_for, request
+from . import analytics_bp
+
+@analytics_bp.route('/admin')
+def admin_analytics():
+    # Fetch analytics for admin
+    return render_template('admin_analytics.html')
+
+
+
+
+from flask import render_template, redirect, url_for, flash
+from flask_login import login_user, logout_user, login_required, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+import logging
+from . import auth_bp
+from app.forms import LoginForm, ChangePasswordForm
+from app.models import User
+from app import db
+
+# Initialize logging
+logger = logging.getLogger(__name__)
+
+@auth_bp.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        # Find the user by email
+        user = User.query.filter_by(email=form.email.data).first()
+
+        if user and check_password_hash(user.password, form.password.data):
+            login_user(user)
+            flash('Login successful!', 'success')
+
+            user_role = user.role  # User role as a string
+            logger.info(f"User {user.email} logged in with role: {user_role}")
+
+            # Redirect based on user role
+            try:
+                role_redirect_map = {
+                    'admin': 'admin.admin_dashboard',
+                    'doctor': 'doctor.doctor_dashboard',
+                    'nurse': 'nurse.nurse_dashboard',
+                    'patient': 'patient.patient_dashboard'
+                }
+                redirect_url = role_redirect_map.get(user_role, 'index')  # Default to index if role not found
+                return redirect(url_for(redirect_url))
+            except Exception as e:
+                logger.error(f"Error during redirecting based on role '{user_role}': {e}")
+                flash('An error occurred while redirecting. Please try again.', 'danger')
+                return redirect(url_for('index'))  # Redirect to the main index page
+        else:
+            flash('Login unsuccessful. Please check your email and password.', 'danger')
+
+    return render_template('login.html', form=form)
+
+@auth_bp.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('Logged out successfully!', 'success')
+    return redirect(url_for('auth.login'))  # Redirect back to the login page
+
+@auth_bp.route('/change-password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = ChangePasswordForm()
+
+    if form.validate_on_submit():
+        # Ensure current password is correct before allowing a password change
+        if not check_password_hash(current_user.password, form.current_password.data):
+            flash('Current password is incorrect. Please try again.', 'danger')
+            return redirect(url_for('auth.change_password'))  # Redirect to change password page
+
+        # Update password and other attributes
+        current_user.password = generate_password_hash(form.new_password.data, method='pbkdf2:sha256')
+        current_user.default_password = False  # Assuming this tracks if the user is still using a default password
+        db.session.commit()
+        flash('Password updated successfully!', 'success')
+        return redirect(url_for('index'))  # Redirect to the main index page
+    
+    return render_template('change_password.html', form=form)
+
+
+
+from flask import Blueprint, render_template, redirect, url_for, flash
+from flask_login import login_required, current_user
+from app.models import User, PatientRecord, Appointment
+from app.forms import PatientRecordForm
+from app import db
+import logging
+
+doctor_bp = Blueprint('doctor', __name__)
+
+# Initialize logging
+logger = logging.getLogger(__name__)
+
+# Doctor Dashboard
+@doctor_bp.route('/dashboard')
+@login_required
+def doctor_dashboard():
+    if current_user.role != 'doctor':  # Check if current user is a doctor
+        logger.warning(f"Unauthorized access attempt to doctor dashboard by {current_user.username}")
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('index'))
+
+    # Fetch all appointments for the current doctor
+    appointments = Appointment.query.filter_by(provider_id=current_user.id).all()
+    logger.info(f"Doctor dashboard accessed by {current_user.username}")
+    return render_template('doctor_dashboard.html', appointments=appointments)
+
+
+# View Appointment Details (Doctor)
+@doctor_bp.route('/appointments/<int:appointment_id>')
+@login_required
+def view_appointment(appointment_id):
+    if current_user.role != 'doctor':  # Ensure only doctors access this route
+        logger.warning(f"Unauthorized access attempt to view appointment {appointment_id} by {current_user.username}")
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('index'))
+
+    # Fetch appointment details
+    appointment = Appointment.query.get_or_404(appointment_id)
+    logger.info(f"Doctor {current_user.username} viewed details for appointment {appointment.id}")
+    return render_template('appointment_details.html', appointment=appointment)
+
+# Update Patient Medical Record
+@doctor_bp.route('/patients/<int:patient_id>/record', methods=['GET', 'POST'])
+@login_required
+def update_patient_record(patient_id):
+    if current_user.role != 'doctor':  # Ensure only doctors can update patient records
+        logger.warning(f"Unauthorized access attempt to update record for patient {patient_id} by {current_user.username}")
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('index'))
+
+    # Fetch the patient details
+    patient = User.query.get_or_404(patient_id)
+    form = PatientRecordForm()
+
+    if form.validate_on_submit():
+        # Create a new medical record for the patient
+        record = PatientRecord(
+            patient_id=patient.id,
+            record_date=form.record_date.data,
+            details=form.details.data
+        )
+        db.session.add(record)
+        db.session.commit()
+        logger.info(f"Doctor {current_user.username} updated medical record for patient {patient.username}")
+        flash('Medical record updated successfully.', 'success')
+        
+        # Redirect to view the updated patient's records instead of an appointment
+        # Assuming you have a route to view patient records; if not, adjust accordingly.
+        return redirect(url_for('doctor.view_patient_record', patient_id=patient.id))  # Adjust this if necessary
+
+    return render_template('update_patient_record.html', form=form, patient=patient)
+
+# Add more routes as needed for other doctor functionalities
+
+
+
+
+
+from flask import Blueprint, render_template, redirect, url_for, flash
+from flask_login import login_required, current_user
+from app.models import User, PatientRecord, Appointment
+from app.forms import UpdatePatientRecordForm, ScheduleAppointmentForm
+from app import db
+import logging
+
+nurse_bp = Blueprint('nurse', __name__)
+
+# Initialize logging
+logger = logging.getLogger(__name__)
+
+def check_nurse_role():
+    if current_user.role != 'nurse':
+        logger.warning(f"Unauthorized access attempt by {current_user.username}")
+        flash('Unauthorized access.', 'danger')
+        return False
+    return True
+
+# Nurse Dashboard
+@nurse_bp.route('/dashboard')
+@login_required
+def nurse_dashboard():
+    if not check_nurse_role():  # Check if the current user is a nurse
+        return redirect(url_for('index'))
+
+    patients = User.query.filter_by(is_patient=True).all()  # Fetch all patients
+    logger.info(f"Nurse dashboard accessed by {current_user.username}")
+    return render_template('nurse_dashboard.html', patients=patients)
+
+# View Patient Details (Nurse)
+@nurse_bp.route('/patients/<int:patient_id>')
+@login_required
+def view_patient(patient_id):
+    if not check_nurse_role():  # Ensure only nurses can access this route
+        return redirect(url_for('index'))
+
+    patient = User.query.get_or_404(patient_id)  # Ensure patient exists
+    logger.info(f"Nurse {current_user.username} viewed details for patient {patient.username}")
+    return render_template('patient_details.html', patient=patient)
+
+# Update Patient Medical Record (Nurse)
+@nurse_bp.route('/patients/<int:patient_id>/record', methods=['GET', 'POST'])
+@login_required
+def update_patient_record(patient_id):
+    if not check_nurse_role():  # Ensure only nurses can update patient records
+        return redirect(url_for('index'))
+
+    patient = User.query.get_or_404(patient_id)  # Ensure patient exists
+    form = UpdatePatientRecordForm()
+
+    if form.validate_on_submit():  # Handle form submission
+        record = PatientRecord(
+            patient_id=patient.id,
+            record_date=form.record_date.data,
+            details=form.details.data
+        )
+        db.session.add(record)  # Add the new record to the database
+        db.session.commit()  # Commit the changes
+        logger.info(f"Nurse {current_user.username} updated medical record for patient {patient.username}")
+        flash('Medical record updated successfully.', 'success')
+        return redirect(url_for('nurse.view_patient', patient_id=patient.id))
+
+    return render_template('update_patient_record.html', form=form, patient=patient)
+
+# Schedule Appointment for Patient
+@nurse_bp.route('/patients/<int:patient_id>/schedule', methods=['GET', 'POST'])
+@login_required
+def schedule_appointment(patient_id):
+    if not check_nurse_role():  # Ensure only nurses can schedule appointments
+        return redirect(url_for('index'))
+
+    patient = User.query.get_or_404(patient_id)  # Ensure the patient exists
+    form = ScheduleAppointmentForm()  # Appointment scheduling form
+
+    if form.validate_on_submit():  # Handle form submission
+        appointment = Appointment(
+            patient_id=patient.id,
+            appointment_date=form.appointment_date.data,
+            details=form.details.data
+        )
+        db.session.add(appointment)  # Add the new appointment to the database
+        db.session.commit()  # Commit the changes
+        logger.info(f"Nurse {current_user.username} scheduled an appointment for patient {patient.username}")
+        flash('Appointment scheduled successfully.', 'success')
+        return redirect(url_for('nurse.view_patient', patient_id=patient.id))
+
+    logger.info(f"Nurse {current_user.username} accessed appointment scheduling for patient {patient.username}")
+    return render_template('schedule_appointment.html', form=form, patient=patient)
+
+# Additional routes can be added for managing medications, etc.
+
+
+
+
+from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask_login import login_required, current_user
+from app.models import User, Appointment, PatientRecord
+from app import db
+import logging
+
+patient_bp = Blueprint('patient', __name__)
+
+# Initialize logging
+logger = logging.getLogger(__name__)
+
+# Patient Dashboard
+@patient_bp.route('/dashboard')
+@login_required
+def patient_dashboard():
+    if not current_user.is_patient:
+        logger.warning(f"Unauthorized access attempt to patient dashboard by {current_user.username}")
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('index'))
+
+    logger.info(f"Patient dashboard accessed by {current_user.username}")
+    return render_template('patient_dashboard.html')
+
+# Patient Profile
+@patient_bp.route('/profile/<int:patient_id>')
+@login_required
+def patient_profile(patient_id):
+    if not current_user.is_patient or current_user.id != patient_id:
+        logger.warning(f"Unauthorized access attempt to profile for patient_id={patient_id} by {current_user.username}")
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('index'))
+
+    # Fetch patient profile information
+    patient = User.query.get_or_404(patient_id)
+    logger.info(f"Patient profile accessed for patient_id={patient_id} by {current_user.username}")
+    return render_template('patient_profile.html', patient=patient)
+
+# Appointment History
+@patient_bp.route('/appointments/history')
+@login_required
+def appointment_history():
+    if not current_user.is_patient:
+        logger.warning(f"Unauthorized access attempt to appointment history by {current_user.username}")
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('index'))
+
+    # Fetch appointment history for the patient
+    appointments = Appointment.query.filter_by(patient_id=current_user.id).all()
+    logger.info(f"Appointment history accessed by {current_user.username}")
+    return render_template('appointment_history.html', appointments=appointments)
+
+# Appointment Scheduling
+@patient_bp.route('/appointments/schedule', methods=['GET', 'POST'])
+@login_required
+def appointment_scheduling():
+    if not current_user.is_patient:
+        logger.warning(f"Unauthorized access attempt to schedule appointment by {current_user.username}")
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('index'))
+
+    if request.method == 'POST':
+        # Process scheduling
+        # Here you would handle form data and create a new appointment
+        logger.info(f"Appointment scheduled for patient {current_user.username}")
+        flash('Appointment scheduled successfully!', 'success')
+        return redirect(url_for('patient.appointment_history'))
+
+    logger.info(f"Appointment scheduling form accessed by {current_user.username}")
+    return render_template('appointment_scheduling.html')
+
+# Medical Records
+@patient_bp.route('/medical-records')
+@login_required
+def medical_records():
+    if not current_user.is_patient:
+        logger.warning(f"Unauthorized access attempt to medical records by {current_user.username}")
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('index'))
+
+    # Fetch medical records for the patient
+    records = PatientRecord.query.filter_by(patient_id=current_user.id).all()
+    logger.info(f"Medical records accessed by {current_user.username}")
+    return render_template('medical_records.html', records=records)
+
+# Prescriptions
+@patient_bp.route('/prescriptions')
+@login_required
+def prescriptions():
+    if not current_user.is_patient:
+        logger.warning(f"Unauthorized access attempt to prescriptions by {current_user.username}")
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('index'))
+
+    # Fetch prescriptions for the patient
+    prescriptions = []  # Replace with actual query to fetch prescriptions
+    logger.info(f"Prescriptions accessed by {current_user.username}")
+    return render_template('prescriptions.html', prescriptions=prescriptions)
+
+
+
+
+
+from app import db
+from flask_login import UserMixin
+from datetime import datetime
+
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), unique=True, nullable=False)
+    email = db.Column(db.String(150), unique=True, nullable=False)
+    password = db.Column(db.String(150), nullable=False)
+    is_provider = db.Column(db.Boolean, default=False)
+    is_patient = db.Column(db.Boolean, default=False)
+    role = db.Column(db.String(50), nullable=False)  # Storing role directly as a string
+
+    # Relationships
+    patient_records = db.relationship('PatientRecord', backref='patient', lazy=True)
+    appointments_as_patient = db.relationship('AppointmentRequest', backref='patient', lazy=True)
+    appointments_as_provider = db.relationship('Appointment', foreign_keys='Appointment.provider_id', backref='provider', lazy=True)
+    prescriptions = db.relationship('Prescription', foreign_keys='Prescription.patient_id', backref='patient', lazy=True)
+
+    def __repr__(self):
+        return f'<User {self.username} - Role: {self.role}>'
+
+
+class PatientRecord(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    patient_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    record_date = db.Column(db.DateTime, default=datetime.utcnow)
+    details = db.Column(db.Text, nullable=False)
+
+    def __repr__(self):
+        return f'<PatientRecord {self.id} - {self.record_date}>'
+
+
+class AppointmentRequest(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    patient_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    requested_time = db.Column(db.DateTime, nullable=False)
+    reason = db.Column(db.String(255), nullable=True)
+    status = db.Column(db.String(20), default='pending')  # e.g., pending, confirmed, cancelled
+
+    def __repr__(self):
+        return f'<AppointmentRequest {self.id} - Patient: {self.patient_id}, Status: {self.status}>'
+
+
+class Appointment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    patient_request_id = db.Column(db.Integer, db.ForeignKey('appointment_request.id'), nullable=False)  # Linking to AppointmentRequest
+    provider_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    appointment_date = db.Column(db.DateTime, default=datetime.utcnow)
+    notes = db.Column(db.Text)
+
+    def __repr__(self):
+        return f'<Appointment {self.id} - Patient Request: {self.patient_request_id}, Provider: {self.provider_id}>'
+
+
+class Prescription(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    patient_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    provider_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    prescription_date = db.Column(db.DateTime, default=datetime.utcnow)
+    medication_name = db.Column(db.String(150), nullable=False)
+    dosage = db.Column(db.String(100), nullable=False)
+    instructions = db.Column(db.Text)
+
+    def __repr__(self):
+        return f'<Prescription {self.id} - Medication: {self.medication_name}>'
+
+
+class AuditLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    action = db.Column(db.String(100), nullable=False)
+    details = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<AuditLog {self.id} - Action: {self.action}>'
+
+
+class HealthMetrics(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    patient_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    metric_type = db.Column(db.String(100), nullable=False)
+    value = db.Column(db.Float, nullable=False)
+    measurement_date = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<HealthMetrics {self.id} - Type: {self.metric_type}, Value: {self.value}>'
+
+
+
+
+add admin/////////////python manage.py add_admin admin admin@example.com yourpassword
+
+
+
+
+
+
+
+

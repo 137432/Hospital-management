@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>Medical Records for {{ patient.name }}</h1>
+    <p><strong>Email:</strong> {{ patient.email }}</p>
+    <p><strong>Phone:</strong> {{ patient.phone }}</p>
+    <p><strong>Address:</strong> {{ patient.address }}</p>
+
+    <a href="{{ url_for('main.add_patient_record', patient_id=patient.id) }}" class="btn btn-primary">Add New Medical Record</a>
+
+    {% if records %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Disease/Condition</th>
+                    <th>Prescribed Medicine</th>
+                    <th>Notes</th>
+                    <th>Follow-Up Date</th>
+                    <th>Date Created</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                    <tr>
+                        <td>{{ record.id }}</td>
+                        <td>{{ record.disease }}</td>
+                        <td>{{ record.prescribed_medicine }}</td>
+                        <td>{{ record.notes }}</td>
+                        <td>{{ record.follow_up_date.strftime('%Y-%m-%d') if record.follow_up_date else 'N/A' }}</td>
+                        <td>{{ record.record_date.strftime('%Y-%m-%d') }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No medical records found for this patient.</p>
+    {% endif %}
+</div>
+{% endblock %}

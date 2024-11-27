@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="my-4">Appointment Requests</h1>
+
+        <!-- Appointment Requests Table -->
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Patient</th>
+                            <th>Requested Time</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appointment in appointment_requests %}
+                            <tr>
+                                <!-- Patient's Full Name -->
+                                <td>{{ appointment.patient.first_name }} {{ appointment.patient.last_name }}</td>
+
+                                <!-- Requested Time Formatted -->
+                                <td>{{ appointment.requested_time.strftime('%Y-%m-%d %H:%M') }}</td>
+
+                                <!-- Status of the Appointment Request -->
+                                <td>{{ appointment.status }}</td>
+
+                                <td>
+                                    {% if current_user.role == 'patient' %}
+                                        <!-- For patients, View is the only option -->
+                                        <a href="{{ url_for('main.view_appointment_requests', appointment_id=appointment.id) }}" class="btn btn-info">View</a>
+                                    {% elif current_user.role in ['doctor', 'nurse'] %}
+                                        <!-- Doctors and nurses can update and delete -->
+                                        <a href="{{ url_for('main.update_appointment_request', appointment_id=appointment.id) }}" class="btn btn-warning">Update</a>
+                                        <a href="{{ url_for('main.delete_appointment_request', appointment_id=appointment.id) }}" class="btn btn-danger">Delete</a>
+                                    {% else %}
+                                        <!-- Admin: Can update and delete -->
+                                        <a href="{{ url_for('main.update_appointment_request', appointment_id=appointment.id) }}" class="btn btn-warning">Update</a>
+                                        <a href="{{ url_for('main.delete_appointment_request', appointment_id=appointment.id) }}" class="btn btn-danger">Delete</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center">No appointment requests found.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

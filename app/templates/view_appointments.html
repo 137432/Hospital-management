@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Your Appointments</h1>
+    
+    {% if appointments %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Appointment Date</th>
+                    <th scope="col">Requested Time</th>
+                    <th scope="col">Reason</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Provider</th>
+                    <th scope="col">Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                <tr>
+                    <th scope="row">{{ loop.index }}</th>
+                    <td>{{ appointment.appointment_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>{{ appointment.patient_request.requested_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>{{ appointment.patient_request.reason or 'N/A' }}</td>
+                    <td>{{ appointment.patient_request.status }}</td>
+                    <td>{{ appointment.provider.username }}</td>
+                    <td>{{ appointment.notes or 'No notes available' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>You have no appointments scheduled.</p>
+    {% endif %}
+    
+    <a href="{{ url_for('main.patient_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+</div>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container-fluid">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header text-center mb-4">
+            <h1>Operational Report</h1>
+            <p>View operational details such as room and bed usage.</p>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <nav class="col-md-3">
+                <div class="list-group">
+                    
+                    <!-- Add report links -->
+                    <a href="{{ url_for('main.prescription_report') }}" class="list-group-item list-group-item-action">Prescription and Medication Report</a>
+                    <a href="{{ url_for('main.admissions_report') }}" class="list-group-item list-group-item-action">Admissions and Discharges Report</a>
+                    <a href="{{ url_for('main.health_metrics_report') }}" class="list-group-item list-group-item-action">Health Metrics Report</a>
+                    <a href="{{ url_for('main.operational_report') }}" class="list-group-item list-group-item-action active">Operational Report</a>
+                    <a href="{{ url_for('main.clinical_report') }}" class="list-group-item list-group-item-action">Clinical Report</a>
+                    <a href="{{ url_for('main.appointment_report') }}" class="list-group-item list-group-item-action">Appointment Report</a>
+                    <a href="{{ url_for('main.patient_report') }}" class="list-group-item list-group-item-action">Patient Report</a>
+                </div>
+            </nav>
+
+            <!-- Main Content Area -->
+            <main class="col-md-9">
+                <!-- Operational Report -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2>Room Usage</h2>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Room Number</th>
+                                    <th>Bed Count</th>
+                                    <th>Occupied Beds</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for room in rooms %}
+                                    <tr>
+                                        <td>{{ room.room_number }}</td>
+                                        <td>{{ room.bed_count }}</td>
+                                        <td>{{ room.patients|length }}</td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="3" class="text-center">No room usage data found.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <h2>Bed Occupancy</h2>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Bed Number</th>
+                                    <th>Room</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for bed in bed_usage %}
+                                    <tr>
+                                        <td>{{ bed.bed_number }}</td>
+                                        <td>{{ bed.room.room_number }}</td>
+                                        <td>{{ 'Occupied' if bed.patients else 'Available' }}</td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="3" class="text-center">No bed occupancy data found.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="{{ url_for('main.doctor_dashboard') }}">Doctor Dashboard</a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{ url_for('main.doctor_dashboard') }}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('main.view_patients') }}">View Patients</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('main.view_appointments') }}">Appointments</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('main.logout') }}">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <h1>Admit Patient: {{ patient.patient_info.first_name }} {{ patient.patient_info.last_name }}</h1>
+    
+    <!-- Admission Form -->
+    <form method="POST">
+        <!-- Bed Selection -->
+        <div class="form-group">
+            <label for="bed_id">Select Bed</label>
+            <select name="bed_id" id="bed_id" class="form-control" required>
+                {% for bed in available_beds %}
+                    <option value="{{ bed.id }}">{{ bed.room_number }} - {{ bed.bed_type }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <!-- Expected Discharge Date -->
+        <div class="form-group">
+            <label for="expected_discharge_date">Expected Discharge Date</label>
+            <input type="date" name="expected_discharge_date" id="expected_discharge_date" class="form-control" required>
+        </div>
+
+        <!-- Reason for Admission -->
+        <div class="form-group">
+            <label for="reason_for_admission">Reason for Admission</label>
+            <textarea name="reason_for_admission" id="reason_for_admission" class="form-control" rows="4" required></textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary">Admit Patient</button>
+    </form>
+</div>
+{% endblock %}

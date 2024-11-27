@@ -1,0 +1,99 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container">
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Medical Records for {{ patient.name }}</h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Patient Information -->
+                        <div class="mb-4">
+                            <h5>Patient Information</h5>
+                            <ul class="list-unstyled">
+                                <li><strong>ID:</strong> {{ patient.id }}</li>
+                                <li><strong>Full Name:</strong> {{ patient.name }}</li>
+                                <li><strong>Date of Birth:</strong> {{ patient.dob.strftime('%Y-%m-%d') }}</li>
+                                <li><strong>Gender:</strong> {{ patient.gender }}</li>
+                                <li><strong>Contact:</strong> {{ patient.contact }}</li>
+                            </ul>
+                        </div>
+
+                        <!-- Medical History -->
+                        <div class="mb-4">
+                            <h5>Medical History</h5>
+                            <ul class="list-group">
+                                {% for record in medical_history %}
+                                    <li class="list-group-item">
+                                        <strong>Date:</strong> {{ record.date.strftime('%Y-%m-%d') }}<br>
+                                        <strong>Condition:</strong> {{ record.condition }}<br>
+                                        <strong>Notes:</strong> {{ record.notes }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <!-- Current Conditions -->
+                        <div class="mb-4">
+                            <h5>Current Conditions</h5>
+                            <ul class="list-group">
+                                {% for condition in current_conditions %}
+                                    <li class="list-group-item">
+                                        <strong>Condition:</strong> {{ condition.condition }}<br>
+                                        <strong>Diagnosis Date:</strong> {{ condition.diagnosis_date.strftime('%Y-%m-%d') }}<br>
+                                        <strong>Status:</strong> {{ condition.status }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <!-- Medications -->
+                        <div class="mb-4">
+                            <h5>Medications</h5>
+                            <ul class="list-group">
+                                {% for medication in medications %}
+                                    <li class="list-group-item">
+                                        <strong>Medication:</strong> {{ medication.name }}<br>
+                                        <strong>Dosage:</strong> {{ medication.dosage }}<br>
+                                        <strong>Start Date:</strong> {{ medication.start_date.strftime('%Y-%m-%d') }}<br>
+                                        <strong>End Date:</strong> {{ medication.end_date.strftime('%Y-%m-%d') }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <!-- Allergies -->
+                        <div class="mb-4">
+                            <h5>Allergies</h5>
+                            <ul class="list-group">
+                                {% for allergy in allergies %}
+                                    <li class="list-group-item">
+                                        <strong>Allergy:</strong> {{ allergy.substance }}<br>
+                                        <strong>Reaction:</strong> {{ allergy.reaction }}<br>
+                                        <strong>Severity:</strong> {{ allergy.severity }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <!-- Visit Notes -->
+                        <div class="mb-4">
+                            <h5>Visit Notes</h5>
+                            <ul class="list-group">
+                                {% for note in visit_notes %}
+                                    <li class="list-group-item">
+                                        <strong>Date:</strong> {{ note.date.strftime('%Y-%m-%d') }}<br>
+                                        <strong>Provider:</strong> {{ note.provider }}<br>
+                                        <strong>Note:</strong> {{ note.note }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

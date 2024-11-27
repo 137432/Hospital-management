@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container-fluid">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header text-center mb-4">
+            <h1>Admissions and Discharges Report</h1>
+            <p>View the details of patient admissions and discharges.</p>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <nav class="col-md-3">
+                <div class="list-group">
+                    <a href="{{ url_for('main.user_management') }}" class="list-group-item list-group-item-action">Manage Providers</a>
+                    <a href="{{ url_for('main.admin_analytics') }}" class="list-group-item list-group-item-action">View Analytics</a>
+                    <a href="{{ url_for('main.notification_center') }}" class="list-group-item list-group-item-action">Notifications</a>
+                    <a href="{{ url_for('main.system_logs') }}" class="list-group-item list-group-item-action">Recent Activity</a>
+                    <!-- Add report links -->
+                    <a href="{{ url_for('main.prescription_report') }}" class="list-group-item list-group-item-action">Prescription and Medication Report</a>
+                    <a href="{{ url_for('main.admissions_report') }}" class="list-group-item list-group-item-action active">Admissions and Discharges Report</a>
+                    <a href="{{ url_for('main.health_metrics_report') }}" class="list-group-item list-group-item-action">Health and Metrics Report</a>
+                    <a href="{{ url_for('main.operational_report') }}" class="list-group-item list-group-item-action">Operational Report</a>
+                    <a href="{{ url_for('main.clinical_report') }}" class="list-group-item list-group-item-action">Clinical Report</a>
+                    <a href="{{ url_for('main.appointment_report') }}" class="list-group-item list-group-item-action">Appointment Report</a>
+                    <a href="{{ url_for('main.patient_report') }}" class="list-group-item list-group-item-action">Patient Report</a>
+                </div>
+            </nav>
+
+            <!-- Main Content Area -->
+            <main class="col-md-9">
+                <!-- Admissions and Discharges Report -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2>Admissions</h2>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Patient</th>
+                                    <th>Admission Date</th>
+                                    <th>Nurse</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for admission in admissions %}
+                                    <tr>
+                                        <td>{{ admission.patient.first_name }} {{ admission.patient.last_name }}</td>
+                                        <td>{{ admission.admission_date.strftime('%Y-%m-%d') }}</td>
+                                        <td>{{ admission.admitting_doctor.username }}</td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="3" class="text-center">No admissions found.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <h2>Discharges</h2>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Patient</th>
+                                    <th>Discharge Date</th>
+                                    <th>Nurse</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for discharge in discharges %}
+                                    <tr>
+                                        <td>{{ discharge.patient.first_name }} {{ discharge.patient.last_name }}</td>
+                                        <td>{{ discharge.discharge_date.strftime('%Y-%m-%d') }}</td>
+                                        <td>{{ discharge.discharging_doctor.username }}</td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="3" class="text-center">No discharges found.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+{% endblock %}

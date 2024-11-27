@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container">
+        <!-- Patient Detail Header -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h4>Patient Details</h4>
+                        <a href="{{ url_for('patient.patient_dashboard') }}" class="btn btn-secondary btn-sm float-right">Back to Dashboard</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Patient Information -->
+                            <div class="col-md-6">
+                                <h5>Personal Information</h5>
+                                <p><strong>Name:</strong> {{ patient.name }}</p>
+                                <p><strong>Email:</strong> {{ patient.email }}</p>
+                                <p><strong>Phone:</strong> {{ patient.phone }}</p>
+                                <p><strong>Date of Birth:</strong> {{ patient.dob.strftime('%B %d, %Y') }}</p>
+                                <p><strong>Address:</strong> {{ patient.address }}</p>
+                            </div>
+
+                            <!-- Medical History -->
+                            <div class="col-md-6">
+                                <h5>Medical History</h5>
+                                {% if medical_history %}
+                                    <ul class="list-group">
+                                        {% for record in medical_history %}
+                                            <li class="list-group-item">
+                                                <strong>Date:</strong> {{ record.record_date.strftime('%B %d, %Y') }}<br>
+                                                <strong>Details:</strong> {{ record.details }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p>No medical history records found.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Appointments -->
+                        <h5 class="mt-4">Recent Appointments</h5>
+                        {% if appointments %}
+                            <ul class="list-group">
+                                {% for appointment in appointments %}
+                                    <li class="list-group-item">
+                                        <strong>Provider:</strong> {{ appointment.provider_name }}<br>
+                                        <strong>Date:</strong> {{ appointment.appointment_date.strftime('%B %d, %Y %H:%M') }}<br>
+                                        <strong>Notes:</strong> {{ appointment.notes }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No recent appointments found.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

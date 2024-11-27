@@ -1,0 +1,69 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container-fluid">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header text-center mb-4">
+            <h1>Prescription and Medication Report</h1>
+            <p>View the prescription details for all patients and providers.</p>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <nav class="col-md-3">
+                <div class="list-group">
+                    <a href="{{ url_for('main.user_management') }}" class="list-group-item list-group-item-action">Manage Providers</a>
+                    <a href="{{ url_for('main.admin_analytics') }}" class="list-group-item list-group-item-action">View Analytics</a>
+                    <a href="{{ url_for('main.notification_center') }}" class="list-group-item list-group-item-action">Notifications</a>
+                    <a href="{{ url_for('main.system_logs') }}" class="list-group-item list-group-item-action">Recent Activity</a>
+                    <!-- Add report links -->
+                    <a href="{{ url_for('main.prescription_report') }}" class="list-group-item list-group-item-action active">Prescription and Medication Report</a>
+                    <a href="{{ url_for('main.admissions_report') }}" class="list-group-item list-group-item-action">Admissions and Discharges Report</a>
+                    <a href="{{ url_for('main.health_metrics_report') }}" class="list-group-item list-group-item-action">Health and Metrics Report</a>
+                    <a href="{{ url_for('main.operational_report') }}" class="list-group-item list-group-item-action">Operational Report</a>
+                    <a href="{{ url_for('main.clinical_report') }}" class="list-group-item list-group-item-action">Clinical Report</a>
+                    <a href="{{ url_for('main.appointment_report') }}" class="list-group-item list-group-item-action">Appointment Report</a>
+                    <a href="{{ url_for('main.patient_report') }}" class="list-group-item list-group-item-action">Patient Report</a>
+                </div>
+            </nav>
+
+            <!-- Main Content Area -->
+            <main class="col-md-9">
+                <!-- Prescription and Medication Report -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2>Prescription and Medication Report</h2>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Medication Name</th>
+                                    <th>Dosage</th>
+                                    <th>Instructions</th>
+                                    <th>Patient</th>
+                                    <th>Provider</th>
+                                    <th>Prescription Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for prescription in prescriptions %}
+                                    <tr>
+                                        <td>{{ prescription.medication_name }}</td>
+                                        <td>{{ prescription.dosage }}</td>
+                                        <td>{{ prescription.instructions }}</td>
+                                        <td>{{ prescription.patient_id }}</td>
+                                        <td>{{ prescription.provider_id }}</td>
+                                        <td>{{ prescription.prescription_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="6" class="text-center">No prescriptions found.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+{% endblock %}

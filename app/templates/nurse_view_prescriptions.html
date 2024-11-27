@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-center mt-4">Prescriptions for {{ patient.first_name }} {{ patient.last_name }}</h1>
+
+    <!-- Prescription Table -->
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Medication Name</th>
+                <th>Dosage</th>
+                <th>Instructions</th>
+                <th>Date Prescribed</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if prescriptions %}
+                {% for prescription in prescriptions %}
+                    <tr>
+                        <td>{{ prescription.id }}</td>
+                        <td>{{ prescription.medication_name }}</td>
+                        <td>{{ prescription.dosage }}</td>
+                        <td>{{ prescription.instructions }}</td>
+                        <td>{{ prescription.prescription_date.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            <form action="{{ url_for('main.confirm_attendance', prescription_id=prescription.id) }}" method="POST" style="display: inline;">
+                                <button type="submit" class="btn btn-warning btn-sm">Confirm Attendance</button>
+                            </form>
+                            
+                            
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6" class="text-center">No prescriptions found for this patient.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <div class="text-center">
+        <a href="{{ url_for('main.list_patients_nurse') }}" class="btn btn-secondary">Back to Patient List</a>
+    </div>
+</div>
+{% endblock %}

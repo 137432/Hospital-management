@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container-fluid">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header text-center mb-4">
+            <h1>Clinical Report</h1>
+            <p>View the clinical details including diseases, diagnoses, and treatment plans.</p>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <nav class="col-md-3">
+                <div class="list-group">
+                    <a href="{{ url_for('main.user_management') }}" class="list-group-item list-group-item-action">Manage Providers</a>
+                    <a href="{{ url_for('main.admin_analytics') }}" class="list-group-item list-group-item-action">View Analytics</a>
+                    <a href="{{ url_for('main.notification_center') }}" class="list-group-item list-group-item-action">Notifications</a>
+                    <a href="{{ url_for('main.system_logs') }}" class="list-group-item list-group-item-action">Recent Activity</a>
+                    <!-- Add report links -->
+                    <a href="{{ url_for('main.prescription_report') }}" class="list-group-item list-group-item-action">Prescription and Medication Report</a>
+                    <a href="{{ url_for('main.admissions_report') }}" class="list-group-item list-group-item-action">Admissions and Discharges Report</a>
+                    <a href="{{ url_for('main.health_metrics_report') }}" class="list-group-item list-group-item-action">Health Metrics Report</a>
+                    <a href="{{ url_for('main.operational_report') }}" class="list-group-item list-group-item-action">Operational Report</a>
+                    <a href="{{ url_for('main.clinical_report') }}" class="list-group-item list-group-item-action active">Clinical Report</a>
+                    <a href="{{ url_for('main.appointment_report') }}" class="list-group-item list-group-item-action">Appointment Report</a>
+                    <a href="{{ url_for('main.patient_report') }}" class="list-group-item list-group-item-action">Patient Report</a>
+                </div>
+            </nav>
+
+            <!-- Main Content Area -->
+            <main class="col-md-9">
+                <!-- Clinical Report -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2>Clinical Records</h2>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Patient</th>
+                                    <th>Disease</th>
+                                    <th>Diagnosis</th>
+                                    <th>Treatment Plan</th>
+                                    <th>Follow-Up Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in records %}
+                                    <tr>
+                                        <td>{{ record.patient.first_name }} {{ record.patient.last_name }}</td>
+                                        <td>{{ record.disease }}</td>
+                                        <td>{{ record.diagnosis }}</td>
+                                        <td>{{ record.treatment_plan }}</td>
+                                        <td>{{ record.follow_up_date }}</td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center">No clinical records available.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+{% endblock %}

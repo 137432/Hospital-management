@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container">
+        <div class="dashboard-header text-center">
+            <h1>Your Appointments</h1>
+        </div>
+
+        <!-- Appointments List -->
+        <div class="card">
+            <div class="card-header">
+                <h4>Upcoming Appointments</h4>
+            </div>
+            <div class="card-body">
+                {% if appointments %}
+                    <ul class="list-group">
+                        {% for appointment in appointments %}
+                            <li class="list-group-item">
+                                <strong>Provider:</strong> {{ appointment.provider.username }}<br>
+                                <strong>Date:</strong> {{ appointment.appointment_date.strftime('%B %d, %Y %H:%M') }}<br>
+                                <strong>Notes:</strong> {{ appointment.notes }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No appointments found.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="text-center my-4">
+            <a href="{{ url_for('main.request_appointment') }}" class="btn btn-primary">Request New Appointment</a>
+            <a href="{{ url_for('main.patient_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+{% endblock %}

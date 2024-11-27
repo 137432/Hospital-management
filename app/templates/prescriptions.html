@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container">
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Prescriptions for {{ patient.name }}</h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Prescription List -->
+                        <ul class="list-group mb-4">
+                            {% for prescription in prescriptions %}
+                                <li class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">{{ prescription.medication_name }}</h5>
+                                        <small>{{ prescription.prescription_date.strftime('%Y-%m-%d') }}</small>
+                                    </div>
+                                    <p class="mb-1">
+                                        <strong>Dosage:</strong> {{ prescription.dosage }}<br>
+                                        <strong>Frequency:</strong> {{ prescription.frequency }}<br>
+                                        <strong>Duration:</strong> {{ prescription.duration }}<br>
+                                        <strong>Instructions:</strong> {{ prescription.instructions }}
+                                    </p>
+                                    <a href="{{ url_for('edit_prescription', prescription_id=prescription.id) }}" class="btn btn-warning btn-sm">Edit</a>
+                                    <a href="{{ url_for('delete_prescription', prescription_id=prescription.id) }}" class="btn btn-danger btn-sm">Delete</a>
+                                </li>
+                            {% empty %}
+                                <li class="list-group-item">No prescriptions found.</li>
+                            {% endfor %}
+                        </ul>
+
+                        <!-- Add New Prescription -->
+                        <div class="text-center">
+                            <a href="{{ url_for('add_prescription', patient_id=patient.id) }}" class="btn btn-primary">Add New Prescription</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

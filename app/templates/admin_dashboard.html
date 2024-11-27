@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container-fluid">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header text-center mb-4">
+            <h1>Admin Dashboard</h1>
+            <p>Welcome, {{ current_user.username }}</p>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <nav class="col-md-3">
+                <div class="list-group">
+                    <!-- Admin Management Links -->
+                    <a href="{{ url_for('main.user_management') }}" class="list-group-item list-group-item-action">Manage Providers</a>
+                    <a href="{{ url_for('main.admin_analytics') }}" class="list-group-item list-group-item-action">View Analytics</a>
+                    <a href="{{ url_for('main.notification_center') }}" class="list-group-item list-group-item-action">Notifications</a>
+                    <a href="{{ url_for('main.system_logs') }}" class="list-group-item list-group-item-action">Recent Activity</a>
+
+                    <!-- Report Links -->
+                    <h5 class="mt-4">Reports</h5>
+                    <a href="{{ url_for('main.prescription_report') }}" class="list-group-item list-group-item-action">Prescription and Medication Report</a>
+                    <a href="{{ url_for('main.admissions_report') }}" class="list-group-item list-group-item-action">Admissions and Discharges Report</a>
+                    <a href="{{ url_for('main.health_metrics_report') }}" class="list-group-item list-group-item-action">Health and Metrics Report</a>
+                    <a href="{{ url_for('main.operational_report') }}" class="list-group-item list-group-item-action">Operational Report</a>
+                    <a href="{{ url_for('main.clinical_report') }}" class="list-group-item list-group-item-action">Clinical Report</a>
+                    <a href="{{ url_for('main.appointment_report') }}" class="list-group-item list-group-item-action">Appointment Report</a>
+                    <a href="{{ url_for('main.patient_report') }}" class="list-group-item list-group-item-action">Patient Report</a>
+                </div>
+            </nav>
+
+            <!-- Main Content Area -->
+            <main class="col-md-9">
+                <!-- Overview Section for Current Page -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        {% if request.endpoint == 'main.user_management' %}
+                            <h4>Provider Management</h4>
+                            <p>Total Providers: {{ provider_count }}</p>
+                            <!-- Add content specific to Provider Management -->
+
+                        {% elif request.endpoint == 'main.admin_analytics' %}
+                            <h4>Analytics</h4>
+                            <p>Recent Metrics: {{ recent_metrics_count }}</p>
+                            <!-- Add analytics display or links -->
+
+                        {% elif request.endpoint == 'main.notification_center' %}
+                            <h4>Notifications</h4>
+                            <p>Total Notifications: {{ notification_count }}</p>
+                            <!-- Add notifications display or links -->
+
+                        {% elif request.endpoint == 'main.system_logs' %}
+                            <h4>Recent Activity</h4>
+                            {% if recent_activity %}
+                                <ul class="list-group">
+                                    {% for activity in recent_activity %}
+                                        <li class="list-group-item">
+                                            <strong>{{ activity.timestamp.strftime('%Y-%m-%d %H:%M') }}:</strong> {{ activity.description }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p>No recent activity.</p>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+{% endblock %}

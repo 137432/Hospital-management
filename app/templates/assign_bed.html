@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-center mt-4">Assign Bed to Patient</h1>
+
+    <form method="POST">
+        <div class="form-group">
+            <label for="bed_number">Select Bed</label>
+            <select name="bed_number" class="form-control" required>
+                <option value="">-- Select Bed --</option>
+                {% for bed in available_beds %}
+                    <option value="{{ bed.bed_number }}">{{ bed.bed_number }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Assign Bed</button>
+    </form>
+
+    <div class="text-center mt-4">
+        <a href="{{ url_for('main.nurse_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

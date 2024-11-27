@@ -1,0 +1,73 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container">
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Help & Support</h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Help Sections -->
+                        <div class="mb-4">
+                            <h5>General Help</h5>
+                            <p>Welcome to the Healthcare Management System. Below are some general instructions to help you get started:</p>
+                            <ul>
+                                <li><strong>Patient Management:</strong> Manage patient records, view details, and schedule appointments.</li>
+                                <li><strong>Provider Management:</strong> Add and manage healthcare providers.</li>
+                                <li><strong>Appointment Scheduling:</strong> Schedule new appointments and view appointment history.</li>
+                                <li><strong>Analytics:</strong> Access data analytics and insights on patient care and appointments.</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5>Frequently Asked Questions (FAQs)</h5>
+                            <div class="accordion" id="faqAccordion">
+                                <div class="card">
+                                    <div class="card-header" id="headingOne">
+                                        <h5 class="mb-0">
+                                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                                How do I add a new patient?
+                                            </button>
+                                        </h5>
+                                    </div>
+                                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#faqAccordion">
+                                        <div class="card-body">
+                                            To add a new patient, go to the <strong>Patient Management</strong> section and click on <strong>Add New Patient</strong>. Fill in the required details and submit the form.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header" id="headingTwo">
+                                        <h5 class="mb-0">
+                                            <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                                How do I schedule an appointment?
+                                            </button>
+                                        </h5>
+                                    </div>
+                                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#faqAccordion">
+                                        <div class="card-body">
+                                            To schedule an appointment, navigate to the <strong>Appointment Scheduling</strong> section, select the patient and provider, choose a date and time, and submit the form.
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Add more FAQs as needed -->
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5>Contact Support</h5>
+                            <p>If you need further assistance, please contact our support team:</p>
+                            <ul>
+                                <li><strong>Email:</strong> support@healthcare.com</li>
+                                <li><strong>Phone:</strong> +1-800-123-4567</li>
+                                <li><strong>Address:</strong> 123 Healthcare St, Wellness City, HC 12345</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

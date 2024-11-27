@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- Header -->
+    <div class="dashboard-header text-center">
+        <h1>Appointments for {{ patient.first_name }} {{ patient.last_name }}</h1>
+    </div>
+
+    {% if appointments %}
+    <!-- Appointment Information -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>Appointment Details</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Appointment ID</th>
+                        <th>Date</th>
+                        <th>Reason for Visit</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appointment in appointments %}
+                    <tr>
+                        <td>{{ appointment.id }}</td>
+                        <td>{{ appointment.appointment_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>{{ appointment.patient_request.reason }}</td>
+                        <td>{{ appointment.patient_request.status }}</td>
+                        <td>
+                            <!-- Actions: Prescribe Medicine, Update Record, Cancel Appointment -->
+                            <a href="{{ url_for('main.prescribe_medicine', patient_id=patient.id) }}" class="btn btn-primary btn-sm">Prescribe Medicine</a>
+                            <a href="{{ url_for('main.update_patient_record', patient_id=patient.id) }}" class="btn btn-warning btn-sm">Update Record</a>
+
+                            <!-- Cancel Appointment Form -->
+                            <form action="{{ url_for('main.cancel_appointment', appointment_id=appointment.id) }}" method="POST" style="display: inline;">
+                                <!-- CSRF Token for protection if using Flask-WTF -->
+                                {% if form %}
+                                    {{ form.hidden_tag() }}
+                                {% endif %}
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to cancel this appointment?');">Cancel</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recent Activities -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>Recent Activities</h4>
+        </div>
+        <div class="card-body">
+            {% for appointment in appointments %}
+            <h5>Activities for Appointment ID: {{ appointment.id }}</h5>
+            {% if appointment.activities %}
+            <ul class="list-group mb-3">
+                {% for activity in appointment.activities %}
+                <li class="list-group-item">
+                    <strong>{{ activity.timestamp.strftime('%Y-%m-%d %H:%M') }}:</strong> {{ activity.description }}
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>No recent activities for this appointment.</p>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-warning mt-4">
+        <p>No appointments found for this patient.</p>
+    </div>
+    {% endif %}
+
+    <div class="mt-4">
+        <a href="{{ url_for('main.doctor_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

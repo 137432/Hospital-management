@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container">
+        <div class="text-center my-4">
+            <h1>Prescriptions for {{ patient.first_name }} {{ patient.last_name }}</h1>
+            <p>Patient ID: {{ patient.id }}</p>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h4>All Prescriptions</h4>
+                <a href="{{ url_for('main.patient_dashboard') }}" class="btn btn-custom float-right">Back to Dashboard</a>
+            </div>
+            <div class="card-body">
+                {% if prescriptions %}
+                    <ul class="list-group">
+                        {% for prescription in prescriptions %}
+                            <li class="list-group-item">
+                                <strong>Medication:</strong> {{ prescription.medication_name }}<br>
+                                <strong>Dosage:</strong> {{ prescription.dosage }}<br>
+                                <strong>Prescribed on:</strong> {{ prescription.prescription_date.strftime('%B %d, %Y') }}<br>
+                                <strong>Instructions:</strong> {{ prescription.instructions }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No prescriptions found.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

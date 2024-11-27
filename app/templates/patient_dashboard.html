@@ -1,0 +1,104 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container">
+        <!-- Header -->
+        <div class="dashboard-header text-center">
+            <h1>Welcome, {{ patient.first_name }} {{ patient.last_name }}</h1>
+            <p>Patient ID: {{ patient.id }}</p>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions text-center my-4">
+            <a href="{{ url_for('main.request_appointment') }}" class="btn btn-primary">Request New Appointment</a>
+            <a href="{{ url_for('main.update_info') }}" class="btn btn-secondary">Update Information</a>
+            <a href="{{ url_for('main.view_medical_records') }}" class="btn btn-info">View Medical Records</a>
+            <a href="{{ url_for('main.view_prescriptions') }}" class="btn btn-warning">View Prescriptions</a>
+        </div>
+
+        <!-- Patient Information -->
+        <div class="card">
+            <div class="card-header">
+                <h4>Patient Information</h4>
+            </div>
+            <div class="card-body">
+                {% if patient.user %}
+                    <p><strong>Email:</strong> {{ patient.user.email }}</p>
+                {% else %}
+                    <p><strong>Email:</strong> Not available</p>
+                {% endif %}
+                <p><strong>Phone:</strong> {{ patient.phone_number or 'Not available' }}</p>
+                <p><strong>Date of Birth:</strong> {{ patient.dob.strftime('%B %d, %Y') if patient.dob else 'Not available' }}</p>
+                <p><strong>Address:</strong> {{ patient.address or 'Not available' }}</p>
+            </div>
+        </div>
+
+        <!-- Upcoming Appointments -->
+        <div class="card">
+            <div class="card-header">
+                <h4>Upcoming Appointments</h4>
+                <a href="{{ url_for('main.view_appointments') }}" class="btn btn-custom float-right">View All</a>
+            </div>
+            <div class="card-body">
+                {% if appointments %}
+                    <ul class="list-group">
+                        {% for appointment in appointments %}
+                            <li class="list-group-item">
+                                <strong>Provider:</strong> {{ appointment.appointment_provider.username or appointment.appointment_provider.email }}<br>
+                                <strong>Date:</strong> {{ appointment.appointment_date.strftime('%B %d, %Y %H:%M') }}<br>
+                                <strong>Notes:</strong> {{ appointment.notes or 'No notes provided' }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No upcoming appointments.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Medical Records -->
+        <div class="card">
+            <div class="card-header">
+                <h4>Medical Records</h4>
+                <a href="{{ url_for('main.view_medical_records') }}" class="btn btn-custom float-right">View All</a>
+            </div>
+            <div class="card-body">
+                {% if records %}
+                    <ul class="list-group">
+                        {% for record in records %}
+                            <li class="list-group-item">
+                                <strong>Date:</strong> {{ record.record_date.strftime('%B %d, %Y') }}<br>
+                                <strong>Details:</strong> {{ record.details | truncate(100) }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No medical records found.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Prescriptions -->
+        <div class="card">
+            <div class="card-header">
+                <h4>Prescriptions</h4>
+                <a href="{{ url_for('main.view_prescriptions') }}" class="btn btn-custom float-right">View All</a>
+            </div>
+            <div class="card-body">
+                {% if prescriptions %}
+                    <ul class="list-group">
+                        {% for prescription in prescriptions %}
+                            <li class="list-group-item">
+                                <strong>Medication:</strong> {{ prescription.medication_name }}<br>
+                                <strong>Dosage:</strong> {{ prescription.dosage }}<br>
+                                <strong>Prescribed on:</strong> {{ prescription.prescription_date.strftime('%B %d, %Y') }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No prescriptions found.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
